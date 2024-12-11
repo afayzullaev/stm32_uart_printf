@@ -1,0 +1,5 @@
+D:/projects/stm32/stm32_assembly/CMakeFiles/stm32_assembly.dir
+D:/projects/stm32/stm32_assembly/CMakeFiles/edit_cache.dir
+D:/projects/stm32/stm32_assembly/CMakeFiles/rebuild_cache.dir
+D:/projects/stm32/stm32_assembly/cmake/stm32cubemx/CMakeFiles/edit_cache.dir
+D:/projects/stm32/stm32_assembly/cmake/stm32cubemx/CMakeFiles/rebuild_cache.dir
