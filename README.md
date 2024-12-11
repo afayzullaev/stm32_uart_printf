@@ -2,6 +2,41 @@
 
 This repository contains a simple example demonstrating how to initialize GPIO pins and toggle them using low-level assembly instructions in an embedded system. The code is specifically designed for microcontrollers based on the ARM Cortex-M architecture (e.g., STM32).
 
+## Project Structure
+
+The repository is organized as follows:
+
+```
+STM32_ASSEMBLY/
+├── .vscode/               # Configuration files for Visual Studio Code
+├── build/                 # Build output directory
+├── cmake/                 # CMake configuration files
+│   ├── stm32cubemx/       # CubeMX-generated CMake scripts
+│   └── gcc-arm-none-eabi.cmake  # CMake toolchain file for ARM GCC
+├── Core/                  # Core application files
+│   ├── Inc/               # Header files
+│   │   ├── main.h         # Main application header
+│   │   ├── stm32f4xx_hal_conf.h # HAL configuration header
+│   │   └── stm32f4xx_it.h # Interrupt handlers header
+│   └── Src/               # Source files
+│       ├── main.c         # Main application source
+│       ├── stm32f4xx_hal_msp.c # HAL MSP initialization
+│       ├── stm32f4xx_it.c # Interrupt handlers source
+│       ├── syscalls.c     # System call implementations
+│       ├── sysmem.c       # Memory management source
+│       └── system_stm32f4xx.c # System initialization source
+├── Drivers/               # HAL and peripheral drivers
+│   ├── Inc/               # Driver headers
+│   └── Src/               # Driver sources
+├── Program/               # Application-specific code
+│   ├── appmain.cpp        # Application entry point (C++)
+│   └── appmain.hpp        # Application-specific header (C++)
+├── README.md              # Project documentation
+├── startup_stm32f407xx.s  # Startup assembly code for STM32F4
+├── CMakeLists.txt         # CMake build configuration
+└── compile_commands.json  # Compilation database for code analysis
+```
+
 ## Features
 
 - Enables GPIO clock.
