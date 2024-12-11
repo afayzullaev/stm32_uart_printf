@@ -95,6 +95,42 @@ void app_main(void) {
 }
 ```
 
+## LDR and STR Operations
+
+### LDR (Load Register)
+The `LDR` instruction is used to load a value from memory into a register. It has the following general format:
+
+```assembly
+LDR Rn, [Rm]
+```
+
+- `Rn`: The destination register where the loaded value will be stored.
+- `[Rm]`: The memory address to read the value from.
+
+For example:
+```assembly
+LDR R0, =0x40023830  // Load the address 0x40023830 into R0
+LDR R1, [R0]         // Load the value at the address in R0 into R1
+```
+
+### STR (Store Register)
+The `STR` instruction is used to store a value from a register into memory. It has the following general format:
+
+```assembly
+STR Rn, [Rm]
+```
+
+- `Rn`: The source register containing the value to store.
+- `[Rm]`: The memory address to write the value to.
+
+For example:
+```assembly
+STR R1, [R0]  // Store the value in R1 to the memory address in R0
+```
+
+### Example Usage in Code
+In the code, `LDR` is used to read memory-mapped registers for GPIO and clock configuration, while `STR` is used to write configuration values or toggle the GPIO pins.
+
 ## How It Works
 
 1. **Enable GPIO Clock:**
