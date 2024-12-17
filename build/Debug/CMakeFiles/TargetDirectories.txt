@@ -1,5 +1,5 @@
-D:/projects/stm32/stm32_assembly/build/Debug/CMakeFiles/stm32_assembly.dir
-D:/projects/stm32/stm32_assembly/build/Debug/CMakeFiles/edit_cache.dir
-D:/projects/stm32/stm32_assembly/build/Debug/CMakeFiles/rebuild_cache.dir
-D:/projects/stm32/stm32_assembly/build/Debug/cmake/stm32cubemx/CMakeFiles/edit_cache.dir
-D:/projects/stm32/stm32_assembly/build/Debug/cmake/stm32cubemx/CMakeFiles/rebuild_cache.dir
+D:/projects/stm32/stm32_dma/build/Debug/CMakeFiles/stm32_dma.dir
+D:/projects/stm32/stm32_dma/build/Debug/CMakeFiles/edit_cache.dir
+D:/projects/stm32/stm32_dma/build/Debug/CMakeFiles/rebuild_cache.dir
+D:/projects/stm32/stm32_dma/build/Debug/cmake/stm32cubemx/CMakeFiles/edit_cache.dir
+D:/projects/stm32/stm32_dma/build/Debug/cmake/stm32cubemx/CMakeFiles/rebuild_cache.dir

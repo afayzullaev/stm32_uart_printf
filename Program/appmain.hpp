@@ -6,6 +6,8 @@
 #endif
 
 #include "main.h"
+#include "stm32f4xx_hal_uart.h"
+#include <stdio.h>
 
 void app_main(void);
 

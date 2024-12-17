@@ -1,4 +1,4 @@
-# Install script for directory: D:/projects/stm32/stm32_assembly/cmake/stm32cubemx
+# Install script for directory: D:/projects/stm32/stm32_dma/cmake/stm32cubemx
 
 # Set the install prefix
 if(NOT DEFINED CMAKE_INSTALL_PREFIX)

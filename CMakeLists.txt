@@ -11,15 +11,22 @@ cmake_minimum_required(VERSION 3.22)
 set(CMAKE_C_STANDARD 11)
 set(CMAKE_C_STANDARD_REQUIRED ON)
 set(CMAKE_C_EXTENSIONS ON)
-
+# Specify the C++ standard
+set(CMAKE_CXX_STANDARD 17) # Or 11/14/20, depending on your needs
+set(CMAKE_CXX_STANDARD_REQUIRED ON)
+set(CMAKE_CXX_EXTENSIONS OFF)
 
 # Define the build type
 if(NOT CMAKE_BUILD_TYPE)
     set(CMAKE_BUILD_TYPE "Debug")
 endif()
 
+
+
 # Set the project name
-set(CMAKE_PROJECT_NAME stm32_assembly)
+set(CMAKE_PROJECT_NAME stm32_dma)
+
+
 
 # Include toolchain file
 include("cmake/gcc-arm-none-eabi.cmake")
@@ -28,7 +35,7 @@ include("cmake/gcc-arm-none-eabi.cmake")
 set(CMAKE_EXPORT_COMPILE_COMMANDS TRUE)
 
 # Enable CMake support for ASM and C languages
-enable_language(C ASM)
+enable_language(CXX C ASM)
 
 # Core project settings
 project(${CMAKE_PROJECT_NAME})
@@ -45,10 +52,16 @@ target_link_directories(${CMAKE_PROJECT_NAME} PRIVATE
     # Add user defined library search paths
 )
 
+# Collect all source files in the Peripherals folder recursively
+file(GLOB_RECURSE PERIPHERALS_SOURCES
+     ${PROJECT_SOURCE_DIR}/Libs/Peripherals/Src/*.cpp
+)
+
 # Add sources to executable
 target_sources(${CMAKE_PROJECT_NAME} PRIVATE
     # Add user sources here
     ${PROJECT_SOURCE_DIR}/Program/appmain.cpp
+    ${PERIPHERALS_SOURCES}
 )
 
 # Add include paths
@@ -68,4 +81,10 @@ target_link_libraries(${CMAKE_PROJECT_NAME}
     stm32cubemx
 
     # Add user defined libraries
+)
+
+
+target_link_options(${CMAKE_PROJECT_NAME} PRIVATE
+    --specs=nosys.specs  # Use minimal I/O system for embedded
+    -u _printf_float     # Optional: Enable float support for printf
 )

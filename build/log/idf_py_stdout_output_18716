@@ -1,0 +1,7 @@
+-- The CXX compiler identification is GNU 12.3.1
+-- The C compiler identification is GNU 12.3.1
+-- The ASM compiler identification is GNU
+-- Found assembler: C:/ST/STM32CubeCLT_1.16.0/GNU-tools-for-STM32/bin/arm-none-eabi-gcc.exe
+-- Configuring done
+-- Generating done
+-- Build files have been written to: D:/projects/stm32/stm32_dma
