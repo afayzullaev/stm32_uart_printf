@@ -1,176 +1,170 @@
-# GPIO Initialization Tutorial
 
-This repository contains a simple example demonstrating how to initialize GPIO pins and toggle them using low-level assembly instructions in an embedded system. The code is specifically designed for microcontrollers based on the ARM Cortex-M architecture (e.g., STM32).
+# STM32F407 UART `printf` Example
 
-## Project Structure
+This repository demonstrates how to implement **`printf` functionality** over UART on an **STM32F407** microcontroller using bare-metal programming. The project uses **HAL (Hardware Abstraction Layer)** and is built with **CMake** for organization and flexibility.
 
-The repository is organized as follows:
+---
+
+## 📁 **Project Structure**
 
 ```
-STM32_ASSEMBLY/
-├── .vscode/               # Configuration files for Visual Studio Code
-├── build/                 # Build output directory
-├── cmake/                 # CMake configuration files
-│   ├── stm32cubemx/       # CubeMX-generated CMake scripts
-│   └── gcc-arm-none-eabi.cmake  # CMake toolchain file for ARM GCC
-├── Core/                  # Core application files
-│   ├── Inc/               # Header files
-│   │   ├── main.h         # Main application header
-│   │   ├── stm32f4xx_hal_conf.h # HAL configuration header
-│   │   └── stm32f4xx_it.h # Interrupt handlers header
-│   └── Src/               # Source files
-│       ├── main.c         # Main application source
-│       ├── stm32f4xx_hal_msp.c # HAL MSP initialization
-│       ├── stm32f4xx_it.c # Interrupt handlers source
-│       ├── syscalls.c     # System call implementations
-│       ├── sysmem.c       # Memory management source
-│       └── system_stm32f4xx.c # System initialization source
-├── Drivers/               # HAL and peripheral drivers
-│   ├── Inc/               # Driver headers
-│   └── Src/               # Driver sources
-├── Program/               # Application-specific code
-│   ├── appmain.cpp        # Application entry point (C++)
-│   └── appmain.hpp        # Application-specific header (C++)
-├── README.md              # Project documentation
-├── startup_stm32f407xx.s  # Startup assembly code for STM32F4
-├── CMakeLists.txt         # CMake build configuration
-└── compile_commands.json  # Compilation database for code analysis
+.
+├── CMakeLists.txt                # CMake build system configuration
+├── Drivers/                      # HAL driver files and startup scripts
+├── Libs/
+│   └── Peripherals/
+│       ├── Inc/                 # Header files for peripherals
+│       │   └── usart.hpp
+│       └── Src/                 # Source files for peripherals
+│           └── usart.cpp        # UART initialization and printf redirection
+├── Program/
+│   ├── appmain.cpp              # Main application code
+│   └── appmain.hpp              # Header file for main application
+├── startup_stm32f407xx.s        # Startup file for STM32F407
+├── stm32_dma.ioc                # STM32CubeMX project file
+├── STM32F407VGTx_FLASH.ld       # Linker script
+└── README.md                    # Project documentation (this file)
 ```
 
-## Features
+---
 
-- Enables GPIO clock.
-- Configures GPIO pins 12 to 15 as outputs.
-- Toggles GPIO pins 12 to 15 on and off with a delay.
+## 🚀 **Features**
+- Redirects **`printf`** to UART for serial communication.
+- Configures UART2 (TX on PA2) with a baud rate of **115200**.
+- Integrates a clean project structure using **CMake**.
+- Supports **float values in `printf`** using `-u _printf_float`.
+- Demonstrates the use of HAL library for STM32 bare-metal programming.
 
-## Code Overview
+---
 
-### `gpiod_init(void)`
-This function initializes the GPIO port by enabling its clock and configuring pins 12 to 15 as output pins.
+## 🛠️ **Tools and Dependencies**
+- **STM32CubeMX**: Peripheral configuration.
+- **CMake**: Build system.
+- **GNU ARM Toolchain**: Cross-compilation for ARM Cortex-M.
+- **VSCode**: IDE for code editing and debugging.
+- **Serial Monitor**: For viewing UART output (e.g., PuTTY, Tera Term).
 
+---
+
+## 🔧 **How It Works**
+
+### 1. **UART Initialization**
+The UART peripheral is initialized with the following configuration:
+- **Baud Rate**: 115200  
+- **Word Length**: 8 bits  
+- **Stop Bits**: 1  
+- **Parity**: None  
+
+**Code Snippet** (usart.cpp):
 ```c
-void gpiod_init(void) {
-    // Enable clock for GPIOD
-    asm volatile (
-        "LDR R0, =0x40023830 \n" // RCC_AHB1ENR address
-        "LDR R1, [R0] \n"      // Load current RCC_AHB1ENR value
-        "ORR R1, R1, #8 \n"    // Set bit 3 to enable GPIOD
-        "STR R1, [R0] \n"      // Write back to RCC_AHB1ENR
-    );
+void UART2_Init(uint32_t baud_rate) {
+    __HAL_RCC_USART2_CLK_ENABLE();
+    __HAL_RCC_GPIOA_CLK_ENABLE();
 
-    // Configure GPIOD pins 12-15 as output
-    asm volatile (
-        "LDR R0, =0x40020C00 \n" // GPIOD_MODER address
-        "LDR R1, [R0] \n"      // Load current GPIOD_MODER value
-        "ORR R1, R1, #(0x55 << 24) \n" // Set pins 12-15 to output mode
-        "STR R1, [R0] \n"      // Write back to GPIOD_MODER
-    );
+    GPIO_InitTypeDef GPIO_InitStruct = {0};
+
+    GPIO_InitStruct.Pin = GPIO_PIN_2 | GPIO_PIN_3;
+    GPIO_InitStruct.Mode = GPIO_MODE_AF_PP;
+    GPIO_InitStruct.Pull = GPIO_NOPULL;
+    GPIO_InitStruct.Speed = GPIO_SPEED_FREQ_HIGH;
+    GPIO_InitStruct.Alternate = GPIO_AF7_USART2;
+    HAL_GPIO_Init(GPIOA, &GPIO_InitStruct);
+
+    huart2.Instance = USART2;
+    huart2.Init.BaudRate = baud_rate;
+    huart2.Init.WordLength = UART_WORDLENGTH_8B;
+    huart2.Init.StopBits = UART_STOPBITS_1;
+    huart2.Init.Parity = UART_PARITY_NONE;
+    huart2.Init.Mode = UART_MODE_TX_RX;
+    HAL_UART_Init(&huart2);
 }
 ```
 
-### `app_main(void)`
-The main function initializes the GPIO port and enters an infinite loop to toggle pins 12 to 15 with a delay.
+---
 
+### 2. **`printf` Redirection**
+The `printf` function is redirected to UART using `_write` and `__io_putchar`:
+
+**Code Snippet** (usart.cpp):
+```c
+int __io_putchar(int ch) {
+    uint8_t c[1];
+    c[0] = ch & 0x00FF;
+    HAL_UART_Transmit(&huart2, &c[0], 1, 100);
+    return ch;
+}
+
+int _write(int file, char *ptr, int len) {
+    for (int i = 0; i < len; i++) {
+        __io_putchar(*ptr++);
+    }
+    return len;
+}
+```
+
+---
+
+### 3. **Main Program**
+The main program demonstrates UART transmission using `printf`:
+
+**Code Snippet** (appmain.cpp):
 ```c
 void app_main(void) {
-    gpiod_init();
+    UART2_Init(115200);
+    HAL_Delay(200);  // Ensure UART is ready
+
+    printf("UART printf example on STM32F407\r\n");
 
     while (1) {
-        // Turn on pins 12-15
-        asm volatile (
-            "LDR R0, =0x40020C14 \n" // GPIOD_ODR address
-            "LDR R1, =0xF000 \n"     // Value to set pins 12-15
-            "STR R1, [R0] \n"        // Write to GPIOD_ODR
-        );
-        HAL_Delay(1000);
-
-        // Turn off pins 12-15
-        asm volatile (
-            "LDR R0, =0x40020C14 \n" // GPIOD_ODR address
-            "MOV R1, #0 \n"         // Value to clear pins 12-15
-            "STR R1, [R0] \n"        // Write to GPIOD_ODR
-        );
+        printf("Hello, world! Counter: %ld\r\n", HAL_GetTick());
         HAL_Delay(1000);
     }
 }
 ```
 
-## LDR and STR Operations
+---
 
-### LDR (Load Register)
-The `LDR` instruction is used to load a value from memory into a register. It has the following general format:
+## 🛠️ **Building the Project**
+To build the project using CMake:
+```bash
+# Create a build directory
+mkdir build
+cd build
 
-```assembly
-LDR Rn, [Rm]
+# Configure the project
+cmake ..
+
+# Build the project
+cmake --build .
 ```
 
-- `Rn`: The destination register where the loaded value will be stored.
-- `[Rm]`: The memory address to read the value from.
+---
 
-For example:
-```assembly
-LDR R0, =0x40023830  // Load the address 0x40023830 into R0
-LDR R1, [R0]         // Load the value at the address in R0 into R1
+## 🖥️ **Running and Testing**
+1. Flash the `.elf` file to the STM32F407 board using a tool like **ST-Link**.
+2. Connect a USB-to-UART adapter to the **PA2 (TX)** pin of the microcontroller.
+3. Open a serial monitor (e.g., Tera Term) and set the baud rate to **115200**.
+4. Verify the UART output.
+
+---
+
+## ⚙️ **Linker Configuration**
+To enable `printf` for floating-point values, the following linker options are set in **CMakeLists.txt**:
+```cmake
+target_link_options(${CMAKE_PROJECT_NAME} PRIVATE
+    --specs=nosys.specs  # Minimal I/O system
+    -u _printf_float     # Enable float support for printf
+)
 ```
 
-### STR (Store Register)
-The `STR` instruction is used to store a value from a register into memory. It has the following general format:
+---
 
-```assembly
-STR Rn, [Rm]
-```
+## 📜 **License**
+This project is open-source and licensed under the [MIT License](LICENSE).
 
-- `Rn`: The source register containing the value to store.
-- `[Rm]`: The memory address to write the value to.
+---
 
-For example:
-```assembly
-STR R1, [R0]  // Store the value in R1 to the memory address in R0
-```
-
-### Example Usage in Code
-In the code, `LDR` is used to read memory-mapped registers for GPIO and clock configuration, while `STR` is used to write configuration values or toggle the GPIO pins.
-
-## How It Works
-
-1. **Enable GPIO Clock:**
-   The clock for the GPIOD peripheral is enabled by setting the corresponding bit in the `RCC_AHB1ENR` register.
-
-2. **Configure GPIO Pins:**
-   Pins 12 to 15 of GPIOD are configured as outputs by modifying the `GPIOD_MODER` register.
-
-3. **Toggle GPIO Pins:**
-   The `GPIOD_ODR` register is used to toggle the output state of pins 12 to 15. The `HAL_Delay` function introduces a 1-second delay between state changes.
-
-## Prerequisites
-
-- ARM Cortex-M microcontroller (e.g., STM32).
-- Toolchain for compiling C code (e.g., GCC for ARM).
-- Debugger/Programmer for flashing the code to the microcontroller.
-
-## Usage
-
-1. Clone the repository:
-   ```bash
-   git clone https://github.com/yourusername/gpio-tutorial.git
-   cd gpio-tutorial
-   ```
-
-2. Build the code using your preferred build system.
-
-3. Flash the binary to your microcontroller using your programmer.
-
-4. Observe the LEDs connected to GPIO pins 12 to 15 toggling on and off with a delay.
-
-## Notes
-
-- The base addresses used in the code (e.g., `0x40023830`, `0x40020C00`, etc.) are specific to STM32 microcontrollers. Modify them as needed for your target device.
-- Ensure that the pins 12 to 15 of the GPIOD port are connected to LEDs or other output devices.
-
-## License
-
-This project is licensed under the MIT License. See the `LICENSE` file for details.
-
-## Contributing
-
-Contributions are welcome! Please fork the repository and submit a pull request with your changes.
+## 📧 **Contact**
+For questions or suggestions, feel free to reach out:
+- **GitHub**: [Your GitHub Profile Link]
+- **Email**: your-email@example.com
