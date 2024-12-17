@@ -167,4 +167,4 @@ This project is open-source and licensed under the [MIT License](LICENSE).
 ## 📧 **Contact**
 For questions or suggestions, feel free to reach out:
 - **GitHub**: [Your GitHub Profile Link]
-- **Email**: your-email@example.com
+- **Email**: fayzullaev776@gmail.com
